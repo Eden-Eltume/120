@@ -1,0 +1,1 @@
+# In this case, because it is a class method self refers to the class.

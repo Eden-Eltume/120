@@ -1,0 +1,1 @@
+# You would need to call .new on the class and provide it with the 2 arguments.

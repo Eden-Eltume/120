@@ -1,0 +1,1 @@
+# It's done by calling class on the instance of the class aka object.
