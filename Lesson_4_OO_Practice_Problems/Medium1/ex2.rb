@@ -1,0 +1,2 @@
+# This created a local variable called quantity instead of updating the instance variable @quantity.
+# It can be fixed by turning the local quantity to the instance variable @quantity by prepending the @ sign.

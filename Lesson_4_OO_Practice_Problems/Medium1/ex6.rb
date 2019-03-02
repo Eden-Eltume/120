@@ -1,0 +1,1 @@
+# Both examples are technically fine, however, the general rule from the Ruby style guide is to "Avoid self where not required."
