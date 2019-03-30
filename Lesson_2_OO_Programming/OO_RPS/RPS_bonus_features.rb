@@ -109,7 +109,7 @@ module WinningCombos
 end
 
 module ScoreBoard
-  NUMBER_OF_WINS = 5
+  NUMBER_OF_WINS = 3
 
   @@players_score = 0
   @@computers_score = 0
@@ -130,7 +130,6 @@ module ScoreBoard
   end
 
   def self.display_score
-    puts ""
     puts "Player: #{@@players_score}"
     puts "Computer: #{@@computers_score}"
     puts "Ties: #{@@ties}"
@@ -142,6 +141,23 @@ module ScoreBoard
     else
       puts "The Computer has won the game."
     end
+  end
+end
+
+class MovesHistory
+  @@humans_past = []
+  @@computers_past = []
+  def initialize(humans_move, computers_move)
+    @@humans_past.push(humans_move)
+    @@computers_past.push(computers_move)
+  end
+
+  def self.humans_history
+    puts "The player has chosen the following moves: #{@@humans_past}"
+  end
+
+  def self.computers_history
+    puts "The computer has chosen the following moves: #{@@computers_past}"
   end
 end
 
@@ -192,6 +208,7 @@ class Game
     loop do
       human.choose
       computer.choose
+      history = MovesHistory.new("#{human.move}", "#{computer.move}")
       result = winner()
       ScoreBoard.increment_score(result)
       display_moves
@@ -199,6 +216,10 @@ class Game
       ScoreBoard.display_score
       break if ScoreBoard.game_over? || !play_again?
     end
+    puts ""
+    MovesHistory.humans_history()
+    MovesHistory.computers_history()
+    puts ""
     ScoreBoard.display_winner()
     display_goodbye_message()
   end
