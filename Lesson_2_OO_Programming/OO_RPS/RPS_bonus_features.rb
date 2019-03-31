@@ -83,6 +83,7 @@ class Computer < Player
       self.move = Move.new(winning_moves.sample)
     end
   end
+end
 
 class Move
   attr_accessor :computer, :human
