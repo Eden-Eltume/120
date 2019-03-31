@@ -55,12 +55,61 @@ class Human < Player
 end
 
 class Computer < Player
+  @@frequent_moves = []
+
   def set_name
     self.name = ['R2D2', 'Ultron'].sample
   end
 
   def choose
-    self.move = Move.new(Move::VALID_CHOICES.keys.sample)
+    if self.name == "R2D2"
+      r2d2()
+    elsif self.name == "Ultron"
+      ultron()
+    end
+  end
+
+  def find_humans_habit
+    @@frequent_moves << MovesHistory.frequent_human_move()
+  end
+
+  def r2d2
+    if @@frequent_moves.size < 2
+      preferred_move = ["lizard", "spock"].sample
+      self.move = Move.new(preferred_move)
+    else
+      humans_move = @@frequent_moves.flatten.pop
+      winning_moves = Move::VALID_CHOICES.keys.select do |valid_choice|
+        if WinningCombos.tell_who_won(humans_move, valid_choice) == "computer"
+          valid_choice
+        end
+      end
+      self.move = Move.new(winning_moves.sample)
+    end
+  end
+
+  def ultron
+    if @@frequent_moves.size < 2
+      preferred_move = ["rock", "paper", "scissors"].sample
+      self.move = Move.new(preferred_move)
+    else
+      humans_move = @@frequent_moves.flatten.pop
+      winning_moves = Move::VALID_CHOICES.keys.select do |valid_choice|
+        if WinningCombos.tell_who_won(humans_move, valid_choice) == "computer"
+          valid_choice
+        end
+      end
+      self.move = Move.new(winning_moves.sample)
+    end
+  end
+
+  def ultron_beat_human
+    winning_choice = Move::VALID_CHOICES.keys.select do |move|
+      if WinningCombos.tell_who_won(@@human_choice.pop, move) == "computer"
+        move
+      end
+    end
+    self.move = Move.new(winning_choice.pop)
   end
 end
 
@@ -93,11 +142,11 @@ module WinningCombos
     'spock' => ['scissors', 'rock']
   }
 
-  def win?(choice1, choice2)
+  def self.win?(choice1, choice2)
     WINNING_SCENARIOS.values_at(choice1).flatten.include?(choice2)
   end
 
-  def tell_who_won(player, computer)
+  def self.tell_who_won(player, computer)
     if win?(player, computer)
       "player"
     elsif win?(computer, player)
@@ -109,7 +158,7 @@ module WinningCombos
 end
 
 module ScoreBoard
-  NUMBER_OF_WINS = 3
+  NUMBER_OF_WINS = 5
 
   @@players_score = 0
   @@computers_score = 0
@@ -130,16 +179,17 @@ module ScoreBoard
   end
 
   def self.display_score
+    puts "SCORE:"
     puts "Player: #{@@players_score}"
     puts "Computer: #{@@computers_score}"
     puts "Ties: #{@@ties}"
   end
 
-  def self.display_winner
+  def self.human_won?
     if @@players_score >= @@computers_score
-      puts "The Player has won the game."
+      true
     else
-      puts "The Computer has won the game."
+      false
     end
   end
 end
@@ -147,17 +197,22 @@ end
 class MovesHistory
   @@humans_past = []
   @@computers_past = []
+
   def initialize(humans_move, computers_move)
     @@humans_past.push(humans_move)
     @@computers_past.push(computers_move)
   end
 
-  def self.humans_history
-    puts "The player has chosen the following moves: #{@@humans_past}"
+  def self.frequent_human_move
+    @@humans_past.select { |el| @@humans_past.count(el) >= 2 }.pop
   end
 
-  def self.computers_history
-    puts "The computer has chosen the following moves: #{@@computers_past}"
+  def self.humans_history(the_human)
+    puts "#{the_human} has chosen the following moves: #{@@humans_past}"
+  end
+
+  def self.computers_history(the_computer)
+    puts "#{the_computer} has chosen the following moves: #{@@computers_past}"
   end
 end
 
@@ -172,6 +227,7 @@ class Game
 
   def display_welcome_message
     puts "Welcome to Rock, Paper, Scissors!"
+    puts "Your opponent is #{computer.name}"
   end
 
   def display_goodbye_message
@@ -179,7 +235,7 @@ class Game
   end
 
   def winner
-    tell_who_won("#{human.move}", "#{computer.move}")
+    WinningCombos.tell_who_won("#{human.move}", "#{computer.move}")
   end
 
   def display_moves
@@ -189,6 +245,14 @@ class Game
 
   def clear_screen
     system('clear' || 'clr')
+  end
+
+  def display_who_won
+    if ScoreBoard.human_won?
+      puts "#{human.name} has won the game!"
+    else
+      puts "#{computer.name} has won the game!"
+    end
   end
 
   def play_again?
@@ -208,7 +272,8 @@ class Game
     loop do
       human.choose
       computer.choose
-      history = MovesHistory.new("#{human.move}", "#{computer.move}")
+      MovesHistory.new("#{human.move}", "#{computer.move}")
+      computer.find_humans_habit()
       result = winner()
       ScoreBoard.increment_score(result)
       display_moves
@@ -216,11 +281,11 @@ class Game
       ScoreBoard.display_score
       break if ScoreBoard.game_over? || !play_again?
     end
-    puts ""
-    MovesHistory.humans_history()
-    MovesHistory.computers_history()
-    puts ""
-    ScoreBoard.display_winner()
+    puts "-" * 50
+    MovesHistory.humans_history(human.name)
+    MovesHistory.computers_history(computer.name)
+    puts "-" * 50
+    display_who_won()
     display_goodbye_message()
   end
 end
