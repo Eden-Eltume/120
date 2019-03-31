@@ -1,23 +1,4 @@
-=begin
-Rock, Paper, Scissors, Lizard, Spock is a two-player game where each player chooses
-one of five possible moves. 
-The chosen moves will then be compared to see who wins, according to the following rules:
-If the players chose the same move, then it's a tie.
-=end
-
-=begin
-Problem - Make the game Rock, paper, scissors, lizard spock
-Example - -Scissors cuts paper. Paper covers rock. Rock crushes lizard. Lizard poisons Spock. 
--Spock smashes scissors. Scissors decapitates lizard. Lizard eats paper. Paper disproves Spock. 
--Spock vaporizes rock. Rock crushes scissors.
-Data structure - Hash to keep track of valid choices and winning scenarios
-Approach - Have a class for Player, Human, Computer & Game
-          Person class:
-          Computer class:
-          Game:           
-Code:
-=end
-
+# OOP of RPSLS
 class Player
   attr_accessor :move, :name
 
