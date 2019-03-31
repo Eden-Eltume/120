@@ -84,16 +84,6 @@ class Computer < Player
     end
   end
 
-  def ultron_beat_human
-    winning_choice = Move::VALID_CHOICES.keys.select do |move|
-      if WinningCombos.tell_who_won(@@human_choice.pop, move) == "computer"
-        move
-      end
-    end
-    self.move = Move.new(winning_choice.pop)
-  end
-end
-
 class Move
   attr_accessor :computer, :human
 
