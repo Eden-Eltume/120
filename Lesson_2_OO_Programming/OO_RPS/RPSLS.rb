@@ -17,7 +17,7 @@ WINNING_SCENARIOS = {
   }
 
 class Player
-  attr_accessor :history
+  attr_accessor :move, :history
 
   def initialize
     @history = []
@@ -29,8 +29,6 @@ class Player
 end
 
 class Human < Player
-  attr_accessor :move
-
   def choose
     letter_choice = ''
     puts("Choose:")
@@ -59,7 +57,6 @@ class Human < Player
 end
 
 class Computer < Player
-  attr_accessor :move
   attr_reader :name
 
   def initialize
