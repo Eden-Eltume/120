@@ -1,20 +1,20 @@
 VALID_CHOICES = {
-    'rock' => 'r',
-    'paper' =>  'p',
-    'scissors' => 's',
-    'lizard' => 'l',
-    'spock' =>  'k'
-  }
+  'rock'      =>  'r',
+  'paper'     =>  'p',
+  'scissors'  =>  's',
+  'lizard'    =>  'l',
+  'spock'     =>  'k'
+}
 
-SCORE_TO_WIN = 3
+SCORE_TO_WIN = 5
 
 WINNING_SCENARIOS = {
-    'rock' => ['scissors', 'lizard'],
-    'paper' => ['rock', 'spock'],
-    'scissors' => ['paper', 'lizard'],
-    'lizard' => ['spock', 'paper'],
-    'spock' => ['scissors', 'rock']
-  }
+  'rock'     => ['scissors', 'lizard'],
+  'paper'    => ['rock', 'spock'],
+  'scissors' => ['paper', 'lizard'],
+  'lizard'   => ['spock', 'paper'],
+  'spock'    => ['scissors', 'rock']
+}
 
 class Player
   attr_accessor :move, :history
@@ -32,7 +32,7 @@ class Human < Player
   def choose
     letter_choice = ''
     puts("Choose:")
-    loop do 
+    loop do
       break if VALID_CHOICES.values.include?(letter_choice)
       VALID_CHOICES.each do |valid_choice, letter|
         puts("#{letter} for #{valid_choice}")
@@ -53,6 +53,7 @@ class Human < Player
   end
 
   protected
+
   attr_accessor :computer
 end
 
@@ -64,18 +65,38 @@ class Computer < Player
     @name = ['R2D2', 'Ultron'].sample
   end
 
-  def choose
-    self.name == 'R2D2' ? r2d2() : ultron() 
+  def choose(human)
+    name == 'R2D2' ? r2d2(human) : ultron(human)
   end
 
-  def r2d2
-    @move = VALID_CHOICES.keys[3..-1].sample
-    @history << self.move
+  def r2d2(human)
+    humans_fave_move = find_fave_move(human)
+    if !humans_fave_move.nil?
+      beat_human(humans_fave_move)
+    else
+      @move = VALID_CHOICES.keys[3..-1].sample
+      @history << move
+    end
   end
 
-  def ultron
-    @move = VALID_CHOICES.keys[0..2].sample
-    @history << self.move
+  def ultron(human)
+    humans_fave_move = find_fave_move(human)
+    if !humans_fave_move.nil?
+      beat_human(humans_fave_move)
+    else
+      @move = VALID_CHOICES.keys[0..2].sample
+      @history << move
+    end
+  end
+
+  def beat_human(fave)
+    counters = WINNING_SCENARIOS.select { |_, moves| moves.include?(fave) }.keys
+    @move = counters.sample
+    @history << move
+  end
+
+  def find_fave_move(human)
+    human.history.select { |el| human.history.count(el) >= 2 }.pop
   end
 
   def win_against?(human)
@@ -83,6 +104,7 @@ class Computer < Player
   end
 
   protected
+
   attr_accessor :human
 end
 
@@ -106,7 +128,7 @@ class ScoreBoard
   end
 
   def increment_computer_score
-    self.computer_score +=1 
+    self.computer_score += 1
   end
 
   def increase_tie_count
@@ -177,13 +199,11 @@ class Game
   end
 
   def game_over?
-    if scoreboard.winner_yet?
-      scoreboard.display_winner
-      return true
-    end
+    return true if scoreboard.winner_yet?
   end
 
   def display_goodbye_message
+    scoreboard.display_winner
     puts "Thanks for playing. Goodbye!"
   end
 
@@ -191,7 +211,7 @@ class Game
     welcome_screen
     loop do
       human.choose
-      computer.choose
+      computer.choose(human)
       update_scoreboard
       clear_screen
       display_moves
