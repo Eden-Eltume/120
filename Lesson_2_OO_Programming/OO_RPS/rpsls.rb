@@ -108,12 +108,6 @@ class Computer < Player
   attr_accessor :human
 end
 
-class Move
-  def initialize(chosen_move)
-    @chosen_move = chosen_move
-  end
-end
-
 class ScoreBoard
   attr_accessor :human_score, :computer_score, :ties
 
@@ -153,7 +147,7 @@ class ScoreBoard
 end
 
 class Game
-  attr_accessor :human, :computer, :move, :scoreboard
+  attr_accessor :human, :computer, :scoreboard
 
   def initialize
     @human = Human.new
