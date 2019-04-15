@@ -1,13 +1,11 @@
-require 'pry'
-
 class Board
-  WINNING_LINES = [[1, 2, 3], [4, 5, 6], [7, 8, 9]] + #rows
-                  [[1, 4, 7], [2, 5, 8], [3, 6, 9]] + #cols
+  WINNING_LINES = [[1, 2, 3], [4, 5, 6], [7, 8, 9]] + # rows
+                  [[1, 4, 7], [2, 5, 8], [3, 6, 9]] + # cols
                   [[1, 5, 9], [3, 5, 7]] # diagonals
 
   def initialize
     @squares = {}
-    (1..9).each { |key| @squares[key] = Square.new}
+    (1..9).each { |key| @squares[key] = Square.new }
   end
 
   def []=(num, marker)
@@ -32,7 +30,7 @@ class Board
       squares = @squares.values_at(*line)
       if three_identical_markers?(squares)
         return squares.first.marker
-      end 
+      end
     end
     nil
   end
@@ -41,6 +39,7 @@ class Board
     (1..9).each { |key| @squares[key] = Square.new }
   end
 
+  # rubocop:disable Metrics/AbcSize
   def draw
     puts "     |     |"
     puts "  #{@squares[1]}  |  #{@squares[2]}  |  #{@squares[3]}"
@@ -54,6 +53,7 @@ class Board
     puts "  #{@squares[7]}  |  #{@squares[8]}  |  #{@squares[9]}"
     puts "     |     |"
   end
+  # rubocop:enable Metrics/AbcSize
 
   private
 
@@ -84,8 +84,6 @@ class Square
   def marked?
     marker != INITIAL_MARKER
   end
-
-
 end
 
 class Player
@@ -122,7 +120,6 @@ class TTTGame
         break if board.someone_won? || board.full?
         clear_screen_and_display_board if humans_turn?
       end
-      
       display_result
       break unless play_again?
       reset_game
@@ -196,9 +193,9 @@ class TTTGame
       puts "You won!"
     when COMPUTER_MARKER
       puts "The computer won!"
-    else 
+    else
       puts "It's a tie!"
-    end 
+    end
   end
 
   def play_again?
