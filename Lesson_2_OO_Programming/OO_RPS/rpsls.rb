@@ -147,7 +147,7 @@ class ScoreBoard
 end
 
 class Game
-  attr_accessor :human, :computer, :scoreboard
+  attr_accessor :human, :computer
 
   def initialize
     @human = Human.new
@@ -168,11 +168,11 @@ class Game
 
   def update_scoreboard
     if human.win_against?(computer)
-      scoreboard.increment_human_score
+      @scoreboard.increment_human_score
     elsif computer.win_against?(human)
-      scoreboard.increment_computer_score
+      @scoreboard.increment_computer_score
     else
-      scoreboard.increase_tie_count
+      @scoreboard.increase_tie_count
     end
   end
 
@@ -193,11 +193,11 @@ class Game
   end
 
   def game_over?
-    return true if scoreboard.winner_yet?
+    return true if @scoreboard.winner_yet?
   end
 
   def display_goodbye_message
-    scoreboard.display_winner
+    @scoreboard.display_winner
     puts "Thanks for playing. Goodbye!"
   end
 
@@ -209,7 +209,7 @@ class Game
       update_scoreboard
       clear_screen
       display_moves
-      puts scoreboard
+      puts @scoreboard
       break if game_over? || !play_again?
     end
     display_goodbye_message
