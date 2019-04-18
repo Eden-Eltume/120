@@ -33,9 +33,9 @@ end
 
 class Player < Participant
   include Currency
-  attr_accessor :bet, :money
 
   STARTING_CASH = 1_000
+  attr_accessor :money, :bet
 
   def initialize
     @money = STARTING_CASH
@@ -69,7 +69,7 @@ class Player < Participant
 
   def pay_bet
     factor = blackjack? ? 2.5 : 2
-    @money += @bet * factor
+    @money += (@bet * factor.to_f).to_i
     @bet = 0
   end
 
