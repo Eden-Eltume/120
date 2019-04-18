@@ -89,7 +89,7 @@ class Player < Participant
   def display_money
     puts "Balance: $#{display_currency(money)}".rjust(HALF_TERMINAL)
     puts " Bet: $#{display_currency(bet)}".rjust(HALF_TERMINAL)
-    puts "-"*TERMINAL_SIZE
+    puts "-" * TERMINAL_SIZE
   end
 
   private
@@ -251,14 +251,14 @@ class Game
     clear_screen
     @player.display_money
 
-    display_arr = [ [@dealer.hand, @player.hand],
-                     [@dealer.total, @player.total] ]
+    display_hash = { "hand" => [@dealer.hand, @player.hand],
+                    "total" => [@dealer.total, @player.total] }
 
-    puts "Dealer".ljust(HALF_TERMINAL) + "You".ljust(HALF_TERMINAL)
-    display_arr.each do |category|
-      puts "Hand: #{category.shift}".ljust(HALF_TERMINAL) + "Total: #{category.pop}".ljust(HALF_TERMINAL) 
+    puts "DEALER".ljust(HALF_TERMINAL) + "YOU".ljust(HALF_TERMINAL)
+    display_hash.each do |category, values|
+      puts "#{category}: #{values.shift}".ljust(HALF_TERMINAL) + "#{category}: #{values.pop}".ljust(HALF_TERMINAL) 
     end
-    puts "-"*TERMINAL_SIZE
+    puts "-" * TERMINAL_SIZE
   end
 
   def display_table_dealer_hidden
