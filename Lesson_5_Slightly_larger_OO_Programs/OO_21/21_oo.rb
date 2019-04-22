@@ -3,8 +3,10 @@ HALF_TERMINAL = TERMINAL_SIZE / 2
 
 module Currency
   def display_currency(dollars)
-    if dollars.to_s.length > 3
-      dollars.to_s.chars.to_a.reverse.each_slice(3).map(&:join).join(",").reverse + ".00"
+    dol_str = dollars.to_s
+    if dol_str.length > 3
+      rev_num = dol_str.chars.to_a.reverse.each_slice(3).map(&:join).join(",")
+      rev_num.reverse + ".00"
     else
       format('%.2f', dollars)
     end
@@ -253,18 +255,24 @@ class Game
     end
   end
 
-  def display_table(dealer_hidden = false)
+  def prep_table(display_hidden)
     clear_screen
     @player.display_money
 
-    @dealer_info = @dealer.info(dealer_hidden)
+    @dealer_info = @dealer.info(display_hidden)
 
-    display_hash = { "hand" => [@dealer_info.first, @player.hand],
-                    "total" => [@dealer_info.last, @player.total] }
+    @display_hash = { "hand"  => [@dealer_info.first, @player.hand],
+                      "total" => [@dealer_info.last, @player.total] }
+  end
+
+  def display_table(display_hidden = false)
+    prep_table(display_hidden)
 
     puts "DEALER".ljust(HALF_TERMINAL) + "YOU".ljust(HALF_TERMINAL)
-    display_hash.each do |category, values|
-      puts "#{category}: #{values.shift}".ljust(HALF_TERMINAL) + "#{category}: #{values.pop}".ljust(HALF_TERMINAL) 
+    @display_hash.each do |category, values|
+      print "#{category}: #{values.shift}".ljust(HALF_TERMINAL)
+      print "#{category}: #{values.pop}".ljust(HALF_TERMINAL)
+      puts ""
     end
     puts "-" * TERMINAL_SIZE
   end
