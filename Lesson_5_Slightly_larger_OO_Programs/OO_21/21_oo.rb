@@ -6,7 +6,7 @@ module Currency
     if dollars.to_s.length > 3
       dollars.to_s.chars.to_a.reverse.each_slice(3).map(&:join).join(",").reverse + ".00"
     else
-      format('%.2d', dollars)
+      format('%.2f', dollars)
     end
   end
 end
@@ -127,6 +127,12 @@ class Dealer < Participant
 
   def total_hidden
     total(false)
+  end
+
+  def info(dealer_hidden)
+    dealer_total = dealer_hidden ? total_hidden : total.to_s
+    dealer_hand = dealer_hidden ? hand.display_hole_card_hidden : hand.to_s
+    [dealer_hand, dealer_total]
   end
 end
 
@@ -251,8 +257,10 @@ class Game
     clear_screen
     @player.display_money
 
-    display_hash = { "hand" => [@dealer.hand, @player.hand],
-                    "total" => [@dealer.total, @player.total] }
+    @dealer_info = @dealer.info(dealer_hidden)
+
+    display_hash = { "hand" => [@dealer_info.first, @player.hand],
+                    "total" => [@dealer_info.last, @player.total] }
 
     puts "DEALER".ljust(HALF_TERMINAL) + "YOU".ljust(HALF_TERMINAL)
     display_hash.each do |category, values|
