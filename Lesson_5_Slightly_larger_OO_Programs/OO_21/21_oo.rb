@@ -59,15 +59,17 @@ class Player < Participant
   def bets
     answer = ''
     puts "How much money are you betting?"
+    answer = gets.chomp.to_f
 
-    loop do
-      answer = gets.downcase.to_i
-      break if valid_bet?(answer)
+    loop do 
+      break if answer == answer.to_i && valid_bet?(answer)
+      puts "Invalid number. Try again."
+      answer = gets.chomp.to_f
     end
 
-    self.bet = answer
-    self.money -= answer
-  end
+    self.bet = answer.to_i
+    self.money -= answer.to_i
+end
 
   def pay_bet
     factor = blackjack? ? 2.5 : 2
