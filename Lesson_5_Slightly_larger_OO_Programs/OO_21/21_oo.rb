@@ -61,7 +61,7 @@ class Player < Participant
     puts "How much money are you betting?"
     answer = gets.chomp.to_f
 
-    loop do 
+    loop do
       break if answer == answer.to_i && valid_bet?(answer)
       puts "Invalid number. Try again."
       answer = gets.chomp.to_f
@@ -69,7 +69,7 @@ class Player < Participant
 
     self.bet = answer.to_i
     self.money -= answer.to_i
-end
+  end
 
   def pay_bet
     factor = blackjack? ? 2.5 : 2
@@ -223,6 +223,23 @@ class Game
 
   MINIMUM_BET = 5
   attr_accessor :deck, :player, :dealer
+
+  def start
+    display_welcome_message
+
+    loop do
+      begin_hand
+      blackjack_or_continue
+      end_hand
+      if @player.broke?
+        puts "You ran out of money. Good luck next time!"
+        break
+      end
+      break unless play_again?
+    end
+
+    display_goodbye_message
+  end
 
   private
 
@@ -401,25 +418,6 @@ class Game
     display_table
     busted_message
     display_result
-  end
-
-  public
-
-  def start
-    display_welcome_message
-
-    loop do
-      begin_hand
-      blackjack_or_continue
-      end_hand
-      if @player.broke?
-        puts "You ran out of money. Good luck next time!"
-        break
-      end
-      break unless play_again?
-    end
-
-    display_goodbye_message
   end
 end
 
