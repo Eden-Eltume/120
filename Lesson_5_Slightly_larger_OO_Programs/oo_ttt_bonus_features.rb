@@ -88,7 +88,7 @@ class Board
 
   def win_is_imminent?(squares, player_marker)
     squares.select { |square| square.marker == player_marker }.count == 2 &&
-    squares.select(&:unmarked?).size == 1
+      squares.select(&:unmarked?).size == 1
   end
 end
 
@@ -131,41 +131,49 @@ class Scoreboard
     @human_score = 0
     @computer_score = 0
     @ties = 0
+    @the_winner = ''
   end
 
   def display_result
     puts ""
     puts "-" * 10 + "Scoreboard" + "-" * 10
-    puts "You:#{human_score}  " + "Computer:#{computer_score} " + " Ties:#{ties}  "
+    puts "You:#{human_score}  " + "Computer:#{computer_score} " \
+         " Ties:#{ties}  "
     puts "-" * 15 + "-" * 15
     puts ""
-  end 
+  end
 
   def update(winning_marker)
     if winning_marker == TTTGame::HUMAN_MARKER
       @human_score += 1
-    elsif  winning_marker == TTTGame::COMPUTER_MARKER
+    elsif winning_marker == TTTGame::COMPUTER_MARKER
       @computer_score += 1
     else
-      @ties  += 1
+      @ties += 1
     end
   end
 
   def winner?
     if @human_score > 1 && @human_score == WINNING_SCORE
+      @the_winner = "You"
       true
-    elsif @computer_score > 1 && @computer_score== WINNING_SCORE
+    elsif @computer_score > 1 && @computer_score == WINNING_SCORE
+      @the_winner = "Computer"
       true
     else
-      false  
+      false
     end
+  end
+
+  def display_winner
+    puts ""
+    puts "GAME OVER! The winner is #{@the_winner}!"
   end
 end
 
 class TTTGame
   HUMAN_MARKER = "X"
   COMPUTER_MARKER = "O"
-  FIRST_TO_MOVE = HUMAN_MARKER
 
   attr_reader :board, :human, :computer, :scoreboard
 
@@ -173,25 +181,49 @@ class TTTGame
     @board = Board.new
     @human = Player.new(HUMAN_MARKER)
     @computer = Player.new(COMPUTER_MARKER)
-    @current_marker = FIRST_TO_MOVE
     @scoreboard = Scoreboard.new
   end
 
-  def play
+  def prompt_first_to_move
+    answer = nil
+    loop do
+      puts "Would you like to go first (y) or the computer (n)?"
+      answer = gets.chomp.downcase
+      break if %w(y n).include?(answer)
+      puts "Sorry, you must answer y or n"
+    end
+    @marker_first_answer = answer
+  end
+
+  def choose_first_to_move
+    if @marker_first_answer == 'y'
+      @current_marker = HUMAN_MARKER
+    else
+      @current_marker = COMPUTER_MARKER
+    end
+  end
+
+  def start_of_game_settings
     clear_screen
     display_welcome_message
+    prompt_first_to_move
+    choose_first_to_move
+  end
+
+  def play
+    start_of_game_settings
 
     loop do
       display_board
 
       loop do
         current_player_moves
-        break if board.someone_won? || board.full?
         clear_screen_and_display_board if humans_turn?
+        break if board.someone_won? || board.full?
       end
       update_score
       display_result
-      break if scoreboard.winner? || !play_again?
+      break if game_over || !play_again?
       reset_game
       display_play_again_message
     end
@@ -205,6 +237,13 @@ class TTTGame
 
   def display_score
     scoreboard.display_result
+  end
+
+  def game_over
+    if scoreboard.winner?
+      scoreboard.display_winner
+      true
+    end
   end
 
   private
@@ -224,7 +263,7 @@ class TTTGame
   end
 
   def display_welcome_message
-    puts "Welcome to Tic-Tac-Toe!"
+    puts "Welcome to Tic-Tac-Toe! The last person to win goes first."
     puts ""
   end
 
@@ -265,7 +304,7 @@ class TTTGame
       choose_middle_square
     else
       choose_random_square
-    end 
+    end
   end
 
   def attack_at_risk_square
@@ -305,11 +344,20 @@ class TTTGame
     display_score
     case board.winning_marker
     when HUMAN_MARKER
-      puts "You won!"
+      puts "You won this round!"
     when COMPUTER_MARKER
-      puts "The computer won!"
+      puts "The computer won this round!"
     else
       puts "It's a tie!"
+    end
+  end
+
+  def set_winning_marker
+    case board.winning_marker
+    when HUMAN_MARKER
+      @current_marker = HUMAN_MARKER
+    when COMPUTER_MARKER
+      @current_marker = COMPUTER_MARKER
     end
   end
 
@@ -325,9 +373,21 @@ class TTTGame
     answer == 'y'
   end
 
+  def reverse_current_marker
+    if @current_marker == COMPUTER_MARKER
+      @current_marker = HUMAN_MARKER
+    else
+      @current_marker = COMPUTER_MARKER
+    end
+  end
+
   def reset_game
     board.reset
-    @current_marker = FIRST_TO_MOVE
+    if !board.winning_marker.nil?
+      @current_marker = board.winning_marker
+    else
+      reverse_current_marker
+    end
     clear_screen
   end
 
