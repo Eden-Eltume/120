@@ -1,5 +1,3 @@
-require 'pry-byebug'
-
 class Board
   attr_accessor :squares
 
@@ -196,11 +194,11 @@ class TTTGame
   end
 
   def choose_first_to_move
-    if @marker_first_answer == 'y'
-      @current_marker = HUMAN_MARKER
-    else
-      @current_marker = COMPUTER_MARKER
-    end
+    @current_marker = if @marker_first_answer == 'y'
+                        HUMAN_MARKER
+                      else
+                        COMPUTER_MARKER
+                      end
   end
 
   def start_of_game_settings
@@ -210,40 +208,41 @@ class TTTGame
     choose_first_to_move
   end
 
+  def round_ended?
+    board.someone_won? || board.full?
+  end
+
   def play
     start_of_game_settings
 
     loop do
-      display_board
-
       loop do
-        current_player_moves
         clear_screen_and_display_board if humans_turn?
-        break if board.someone_won? || board.full?
+        current_player_moves
+        break if round_ended?
       end
+
+      display_board
       update_score
       display_result
-      break if game_over || !play_again?
+      break if game_over? || !play_again?
       reset_game
       display_play_again_message
     end
 
-    display_goodbye_message
+    end_of_game
   end
 
   def update_score
     scoreboard.update(board.winning_marker)
   end
 
-  def display_score
-    scoreboard.display_result
+  def game_over?
+    scoreboard.winner?
   end
 
-  def game_over
-    if scoreboard.winner?
-      scoreboard.display_winner
-      true
-    end
+  def end_of_game
+    display_winner_and_goodbye if game_over?
   end
 
   private
@@ -263,12 +262,23 @@ class TTTGame
   end
 
   def display_welcome_message
-    puts "Welcome to Tic-Tac-Toe! The last person to win goes first."
+    puts "Welcome to Tic-Tac-Toe!" \
+         "There's #{Scoreboard::WINNING_SCORE} rounds." \
+         "The last person to win goes first."
     puts ""
+  end
+
+  def display_score
+    scoreboard.display_result
   end
 
   def display_goodbye_message
     puts "Thanks for play Tic Tac Toe! Goodbye!"
+  end
+
+  def display_winner_and_goodbye
+    scoreboard.display_winner
+    display_goodbye_message
   end
 
   def joinor(arr, delimiter=', ', word='or')
@@ -282,17 +292,21 @@ class TTTGame
     end
   end
 
+  def valid_int?(input_string)
+    input_string.to_i.to_s == input_string
+  end
+
   def human_moves
     keys_left = joinor(board.unmarked_keys)
     puts "Choose a square: (#{keys_left}) "
     square = nil
     loop do
-      square = gets.chomp.to_i
-      break if board.unmarked_keys.include?(square)
+      square = gets.chomp
+      break if valid_int?(square) && board.unmarked_keys.include?(square.to_i)
       puts "Sorry, that's not a valid choice."
     end
 
-    board[square] = human.marker
+    board[square.to_i] = human.marker
   end
 
   def computer_moves
@@ -374,11 +388,11 @@ class TTTGame
   end
 
   def reverse_current_marker
-    if @current_marker == COMPUTER_MARKER
-      @current_marker = HUMAN_MARKER
-    else
-      @current_marker = COMPUTER_MARKER
-    end
+    @current_marker = if @current_marker == COMPUTER_MARKER
+                        HUMAN_MARKER
+                      else
+                        COMPUTER_MARKER
+                      end
   end
 
   def reset_game
