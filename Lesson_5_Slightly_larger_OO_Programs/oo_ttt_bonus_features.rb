@@ -1,3 +1,61 @@
+module Displayable
+  private
+
+  def display_welcome_message
+    puts "Welcome to Tic-Tac-Toe!" \
+         "There's #{Scoreboard::WINNING_SCORE} rounds." \
+         "The last person to win goes first."
+    puts ""
+  end
+
+  def display_score
+    scoreboard.display_result
+  end
+
+  def display_goodbye_message
+    puts "Thanks for play Tic Tac Toe! Goodbye!"
+  end
+
+  def display_winner_and_goodbye
+    scoreboard.display_winner
+    display_goodbye_message
+  end
+
+  def display_board
+    puts "You're #{human.marker} and the computer is #{computer.marker}."
+    puts ""
+    board.draw()
+    puts ""
+  end
+
+  def clear_screen
+    system('clear' || 'clr')
+  end
+
+  def clear_screen_and_display_board
+    display_score
+    clear_screen
+    display_board
+  end
+
+  def display_result
+    display_score
+    case board.winning_marker
+    when human.marker
+      puts "You won this round!"
+    when computer.marker
+      puts "The computer won this round!"
+    else
+      puts "It's a tie!"
+    end
+  end
+
+  def display_play_again_message
+    puts "Let's play again!"
+    puts ""
+  end
+end
+
 class Board
   attr_accessor :squares
 
@@ -153,14 +211,20 @@ class Scoreboard
 
   def winner?
     if @human_score > 1 && @human_score == WINNING_SCORE
-      @the_winner = "You"
       true
     elsif @computer_score > 1 && @computer_score == WINNING_SCORE
-      @the_winner = "Computer"
       true
     else
       false
     end
+  end
+
+  def update_winner
+    human_criteria_met = @human_score > 1 && @human_score == WINNING_SCORE 
+    computer_criteria_met = @computer_score > 1 && @computer_score == WINNING_SCORE 
+
+    @the_winner = "You" if human_criteria_met
+    @the_winner = "Computer" if computer_criteria_met
   end
 
   def display_winner
@@ -172,6 +236,8 @@ end
 class TTTGame
   HUMAN_MARKER = "X"
   COMPUTER_MARKER = "O"
+
+  include Displayable
 
   attr_reader :board, :human, :computer, :scoreboard
 
@@ -223,7 +289,7 @@ class TTTGame
       end
 
       display_board
-      update_score
+      update_scoreboard
       display_result
       break if game_over? || !play_again?
       reset_game
@@ -233,8 +299,9 @@ class TTTGame
     end_of_game
   end
 
-  def update_score
+  def update_scoreboard
     scoreboard.update(board.winning_marker)
+    scoreboard.update_winner
   end
 
   def game_over?
@@ -259,26 +326,6 @@ class TTTGame
 
   def humans_turn?
     @current_marker == HUMAN_MARKER
-  end
-
-  def display_welcome_message
-    puts "Welcome to Tic-Tac-Toe!" \
-         "There's #{Scoreboard::WINNING_SCORE} rounds." \
-         "The last person to win goes first."
-    puts ""
-  end
-
-  def display_score
-    scoreboard.display_result
-  end
-
-  def display_goodbye_message
-    puts "Thanks for play Tic Tac Toe! Goodbye!"
-  end
-
-  def display_winner_and_goodbye
-    scoreboard.display_winner
-    display_goodbye_message
   end
 
   def joinor(arr, delimiter=', ', word='or')
@@ -337,35 +384,6 @@ class TTTGame
     board[board.unmarked_keys.sample] = computer.marker
   end
 
-  def display_board
-    puts "You're #{human.marker} and the computer is #{computer.marker}."
-    puts ""
-    board.draw()
-    puts ""
-  end
-
-  def clear_screen
-    system('clear' || 'clr')
-  end
-
-  def clear_screen_and_display_board
-    display_score
-    clear_screen
-    display_board
-  end
-
-  def display_result
-    display_score
-    case board.winning_marker
-    when HUMAN_MARKER
-      puts "You won this round!"
-    when COMPUTER_MARKER
-      puts "The computer won this round!"
-    else
-      puts "It's a tie!"
-    end
-  end
-
   def set_winning_marker
     case board.winning_marker
     when HUMAN_MARKER
@@ -403,11 +421,6 @@ class TTTGame
       reverse_current_marker
     end
     clear_screen
-  end
-
-  def display_play_again_message
-    puts "Let's play again!"
-    puts ""
   end
 end
 
