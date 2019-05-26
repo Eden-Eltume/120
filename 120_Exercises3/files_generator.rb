@@ -1,16 +1,16 @@
 require 'fileutils'
 
 copy_and_paste = <<~NAMES
-1   Inherited Year  completed
-2   Start the Engine (Part 1)   completed
-3   Only Pass the Year  completed
-4   Start the Engine (Part 2)   completed
-5   Towable (Part 1)  completed
-6   Towable (Part 2)  completed
-7   Method Lookup (Part 1)  completed
-8   Method Lookup (Part 2)  completed
-9   Method Lookup (Part 3)  completed
-10  Transportation
+1   Reading and Writing   completed
+2   Choose the Right Method   completed
+3   Access Denied   completed
+4   Comparing Names   completed
+5   Who is Older?   completed
+6   Guaranteed Formatting   completed
+7   Prefix the Name   completed
+8   Avoid Mutation  completed
+9   Calculated Age  completed
+10  Unexpected Change
 NAMES
 
 def generate_filenames(heredoc, filetype)
