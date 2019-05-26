@@ -1,16 +1,16 @@
 require 'fileutils'
 
 copy_and_paste = <<~NAMES
-1   Find the Class  completed
-2   Create the Class  completed
-3   Create the Object   completed
-4   What Are You?   completed
-5   Hello, Sophie! (Part 1)   completed
-6   Hello, Sophie! (Part 2)   completed
-7   Reader  completed
-8   Writer  completed
-9   Accessor  completed
-10  Walk the Cat  completed
+1   Generic Greeting (Part 1)   completed
+2   Hello, Chloe!   completed
+3   Identify Yourself (Part 1)  completed
+4   Generic Greeting (Part 2)   completed
+5   Counting Cats   completed
+6   Colorful Cat  completed
+7   Identify Yourself (Part 2)  completed
+8   Public Secret   completed
+9   Private Secret  completed
+10  Protected Secret
 NAMES
 
 def generate_filenames(heredoc, filetype)
