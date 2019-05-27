@@ -1,16 +1,16 @@
 require 'fileutils'
 
 copy_and_paste = <<~NAMES
-1   Reading and Writing   completed
-2   Choose the Right Method   completed
-3   Access Denied   completed
-4   Comparing Names   completed
-5   Who is Older?   completed
-6   Guaranteed Formatting   completed
-7   Prefix the Name   completed
-8   Avoid Mutation  completed
-9   Calculated Age  completed
-10  Unexpected Change
+1   Banner Class  completed
+2   What's the Output?  completed
+3   Fix the Program - Books (Part 1)  completed
+4   Fix the Program - Books (Part 2)  completed
+5   Fix the Program - Persons   completed
+6   Fix the Program - Flight Data   completed
+7   Buggy Code - Car Mileage  completed
+8   Rectangles and Squares  completed
+9   Complete the Program - Cats!  completed
+10  Refactoring Vehicles  completed
 NAMES
 
 def generate_filenames(heredoc, filetype)
